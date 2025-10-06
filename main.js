@@ -3,8 +3,8 @@ const $$ = document.querySelectorAll.bind(document);
 
 //Doi tuong
 function validator(options) {
-    function getParent(element, selector) {
-        while (element.parentElement) {
+    function getParent(element = element.parentElement, selector) {
+        while (element) {
             if (element.parentElement.matches(selector)) {
                 return element.parentElement;
             }
@@ -16,10 +16,12 @@ function validator(options) {
     var selectorRules = {};
     //Ham thuc hien validate
     const validate = function (element, rule) {
-        const errorElement = getParent(
-            element,
-            options.formGroupSelector
-        ).querySelector(options.errorMessage);
+        var elementParent = getParent(element, options.formGroupSelector);
+        if (elementParent) {
+            var errorElement = elementParent.querySelector(
+                options.errorMessage
+            );
+        }
         var errorMessage;
         //lay ra cac rule cua selector
         var rules = selectorRules[rule.selector];
@@ -39,16 +41,13 @@ function validator(options) {
             }
             if (errorMessage) break;
         }
+        console.log(element.type);
         if (errorMessage) {
             errorElement.innerText = errorMessage;
-            getParent(element, options.formGroupSelector).classList.add(
-                "invalid"
-            );
+            elementParent.classList.add("invalid");
         } else {
             errorElement.textContent = "";
-            getParent(element, options.formGroupSelector).classList.remove(
-                "invalid"
-            );
+            elementParent.classList.remove("invalid");
         }
         return !errorMessage;
     };
@@ -189,6 +188,3 @@ validator.isConfirmed = function (selector, getConfirmValue, message) {
         },
     };
 };
-// inputValue === value
-//                 ? undefined
-//                 : "Vui lòng nhập lại đúng mật khẩu ";
